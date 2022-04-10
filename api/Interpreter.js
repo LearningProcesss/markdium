@@ -28,27 +28,34 @@ class Interpreter {
      */
     page;
 
-    /**
-     * 
-     * @param {cheerio.CheerioAPI} $
-     * @param {puppeteer.Page} page 
-     */
-    constructor($, page) {
-        this.$ = $;
-        this.page = page;
-    }
+    // /**
+    //  * 
+    //  * @param {cheerio.CheerioAPI} $
+    //  * @param {puppeteer.Page} page 
+    //  */
+    // constructor($, page) {
+    //     this.$ = $;
+    //     this.page = page;
+    // }
 
     /**
-     *
-     * @param {cheerio.Element} el
-     * @returns {String}
+     * 
+     * @param {cheerio.CheerioAPI} $ 
+     * @param {puppeteer.Page} page 
+     * @param {cheerio.Element} el 
+     * @returns {Promise<String>}
      */
-    async do(el) {
+    async do($, page, el) {
+
+        if (!$ || !page || !el) {
+            return;
+        }
+
         const i = this.interpretation[el.tagName];
 
         if (!i) { return; }
 
-        return await i.do(this.$, this.page, el);
+        return await i.do($, page, el);
     }
 }
 

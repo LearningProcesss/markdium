@@ -1,32 +1,43 @@
 const fs = require('fs');
+const path = require('path');
 
 class Writer {
 
     /**
      * @type String
      */
-    filePath;
+    baseDir;
 
     /**
      * 
-     * @param {String} filePath 
+     * @param {String} baseDir 
      */
-    constructor(filePath) {
-        this.filePath = filePath;
+    constructor(baseDir) {
+        this.baseDir = baseDir;
     }
 
     /**
-     * 
+     * @param {String} fileName
      * @param {String} text 
      */
-    append(text) {
+    append(fileName, text) {
 
-        if (!text) {
+        if (!fileName || !text) {
             return;
         }
 
-        fs.writeFileSync(this.filePath, text, { flag: "a+", encoding: "utf-8"});
+        fs.writeFileSync(path.join(this.baseDir, fileName), text, { flag: "a+", encoding: "utf-8"});
     }
+
+    /**
+     * 
+     * @param {string} fileName 
+     * @returns {String}
+     */
+    getFullFilePath(fileName) {
+        return path.join(this.baseDir, fileName);
+    }
+
 }
 
 module.exports = {

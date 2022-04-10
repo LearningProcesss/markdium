@@ -1,19 +1,20 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
-const fs = require('fs');
+const { Tor } = require('./api/Tor');
 const { Interpreter } = require('./api/Interpreter');
 const { Writer } = require('./api/Writer');
+const { startServer } = require('./server/server');
 const util = require('util');
 
 
-async function scrollToBottom(page) {
-    const distance = 100; // should be less than or equal to window.innerHeight
-    const delay = 100;
-    while (await page.evaluate(() => document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight)) {
-        await page.evaluate((y) => { document.scrollingElement.scrollBy(0, y); }, distance);
-        await page.waitFor(delay);
-    }
-}
+// async function scrollToBottom(page) {
+//     const distance = 100; // should be less than or equal to window.innerHeight
+//     const delay = 100;
+//     while (await page.evaluate(() => document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight)) {
+//         await page.evaluate((y) => { document.scrollingElement.scrollBy(0, y); }, distance);
+//         await page.waitFor(delay);
+//     }
+// }
 
 async function scrollToBottom() {
     await new Promise(resolve => {
@@ -29,48 +30,7 @@ async function scrollToBottom() {
     });
 }
 
-/**
- * 
- * @param {boolean} withTestPage 
- */
-async function main(withTestPage) {
-
-    if (withTestPage) {
-
-        const html = fs.readFileSync("page.html", "utf-8");
-
-        const $ = await cheerio.load(html);
-
-        const article = $('article').first();
-
-        const section = article.find('section').first();
-
-        let rows = [];
-
-        let text = "";
-
-        const interpreter = new Interpreter($);
-
-        console.log(Interpreter);
-
-        section.find('h1, h2, img, p, a, iframe').each((i, el) => {
-
-            const result = interpreter.do(el);
-
-            // const interpretation = interpret($, el);
-
-            // rows.push(interpretation);
-
-            text += result;
-
-            // console.log("############################");
-        });
-
-        fs.writeFileSync('test.md', text, 'utf-8');
-
-
-        return;
-    }
+async function main() {
 
     const browser = await puppeteer.launch({
         headless: true,
@@ -131,4 +91,10 @@ async function* elIterator(interpreter, elements) {
     }
 }
 
-main(false);
+startServer();
+
+// main();
+
+// const tor = new Tor(new Interpreter(), new Writer("/workspaces/markdium/output/test.md"));
+
+// tor.parsePage("https://javascript.plainenglish.io/showcase-your-medium-articles-with-react-20a2a4151091");

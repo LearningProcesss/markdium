@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
 const axios = require('axios');
 const path = require('path');
-// const { Interpreter } = require('./Interpreter');
+const { Interpreter } = require('./Interpreter');
 
 class Interpretation {
 
