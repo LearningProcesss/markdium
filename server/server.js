@@ -9,24 +9,27 @@ const tor = Factory.Create();
 
 const port = 3000
 
-app.get('/', (req, res) => res.send('Hello World!'));
-
 app.get('/convert', async (req, res) => {
-    
+
     const url = req.query.url;
-    const download = ((req.query.download + '').toLowerCase() === 'true')
+    const getAs = req.query.getAs;
 
     console.log('url->', url);
+    console.log('getAs->', getAs);
 
     const file = await tor.parsePage(url);
-
-    if (download) {
-        return res.download(file);
-    }
-
     const fileContent = fs.readFileSync(file, "utf-8");
 
-    res.send(marked.parse(fileContent));
+    if (getAs === 'download') {
+        return res.download(file);
+    } else if (getAs === 'text') {
+        res.set('content-type', 'text/plain');
+        return res.send(fileContent);
+    } else if (getAs === 'md') {
+        return res.send(marked.parse(fileContent));
+    }
+
+    return res.send("<h1>getAs not valid!</h1>");
 });
 
 function startServer() {
